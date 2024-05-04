@@ -1,15 +1,11 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import mongoose from "mongoose";
 import contactsRouter from "./routes/contactsRouter.js";
-const DB_HOST =
-  "mongodb+srv://Stas:krhmey69UbX8sK.@cluster0.qqpvege.mongodb.net/contact_reader?retryWrites=true&w=majority&appName=Cluster0";
-mongoose.set("strictQuery", true);
-mongoose
-  .connect(DB_HOST)
-  .then(() => console.log("Success"))
-  .catch((error) => console.log(error.message));
+import dotenv from "dotenv";
+dotenv.config();
+
+
 const app = express();
 
 app.use(morgan("combined"));
@@ -30,4 +26,3 @@ app.use((err, req, res, next) => {
 app.listen(3000, () => {
   console.log("Server is running. Use our API on port: 3000");
 });
-//krhmey69UbX8sK.
