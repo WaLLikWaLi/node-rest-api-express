@@ -8,10 +8,17 @@ import Contact from "../models/contact.js";
 
 export const getAllContacts = async (req, res, next) => {
   try {
-    const contacts = await Contact.find();
+    const { _id: owner } = req.user;
+    const { page = 1, limit = 10 } = req.query;
+    const skip = (page - 1) * limit;
+    const contacts = await Contact.find({ owner }, "-createdAt -updatedAt", {
+      skip,
+      limit,
+    }).populate("owner", "name email");
     res.status(200).json(contacts);
   } catch (error) {
-    next(HttpError(error.status, "Internal Server Error"));
+    console.log(error);
+    next(HttpError(error.status, error.message));
   }
 };
 
@@ -47,7 +54,11 @@ export const createContact = async (req, res, next) => {
     if (typeof error !== "undefined") {
       throw HttpError(400, error.message);
     }
-    const newContact = await Contact.create(req.body);
+
+    const { _id: owner } = req.user;
+    console.log(req.user);
+    const newContact = await Contact.create({ ...req.body, owner });
+
     res.status(201).json(newContact);
   } catch (error) {
     next(error);
